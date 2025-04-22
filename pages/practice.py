@@ -53,7 +53,7 @@ def practice_page():
         st.session_state.current_question_index = 0
         st.session_state.practice_answers = []
         st.session_state.practice_results = []
-        st.experimental_rerun()
+        st.rerun()
     
     # Display questions if they are in session state
     if 'practice_questions' in st.session_state and st.session_state.practice_questions:
@@ -93,13 +93,13 @@ def practice_page():
                 st.session_state.current_question_index += 1
                 # 保存会话状态
                 auth.save_session_state()
-                st.experimental_rerun()
+                st.rerun()
             else:
                 # Practice completed - 切换到摘要页面
                 st.session_state.show_practice_summary = True
                 # 保存会话状态
                 auth.save_session_state()
-                st.experimental_rerun()
+                st.rerun()
         
         # Display question form
         submitted = create_question_form(current_question, current_question['id'], user_id, handle_answer_submission)
@@ -119,13 +119,13 @@ def practice_page():
                     st.session_state.current_question_index += 1
                     # 保存会话状态
                     auth.save_session_state()
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     # Practice completed - 切换到摘要页面
                     st.session_state.show_practice_summary = True
                     # 保存会话状态
                     auth.save_session_state()
-                    st.experimental_rerun()
+                    st.rerun()
 
 def display_practice_summary():
     """单独的函数显示练习结果摘要，不在任何表单内部"""
@@ -177,4 +177,4 @@ def display_practice_summary():
             del st.session_state.show_practice_summary
             # 保存会话状态
             auth.save_session_state()
-            st.experimental_rerun() 
+            st.rerun() 

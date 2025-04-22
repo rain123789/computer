@@ -1,7 +1,7 @@
 import streamlit as st
 import database as db
 import auth
-from utils.ui import header, subheader, card, pagination_nav
+from utils.ui import header, subheader, card, pagination_nav, show_difficulty
 import pandas as pd
 import os
 from utils.question_parser import parse_questions_file
@@ -127,12 +127,12 @@ def show_question_list():
         with col1:
             if st.button(f"编辑题目 #{q['id']}", key=f"edit_{q['id']}"):
                 st.session_state.edit_question_id = q['id']
-                st.experimental_rerun()
+                st.rerun()
         with col2:
             if st.button(f"删除题目 #{q['id']}", key=f"delete_{q['id']}"):
                 if db.delete_question(q['id']):
                     st.success(f"题目 #{q['id']} 已删除")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("删除失败，请稍后重试")
     
@@ -226,13 +226,13 @@ def show_edit_question_form(question_id):
                 ):
                     st.success("题目修改成功！")
                     st.session_state.edit_question_id = None
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("修改失败，请稍后重试")
         
         if cancel:
             st.session_state.edit_question_id = None
-            st.experimental_rerun()
+            st.rerun()
 
 def show_add_question_form():
     """Display form to add a new question"""
@@ -300,7 +300,7 @@ def show_add_question_form():
                 ):
                     st.success("题目添加成功！")
                     # Clear form (need to rerun)
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("添加失败，请稍后重试")
 
@@ -473,7 +473,7 @@ def show_category_management():
                 with open(file_path, 'w', encoding='utf-8') as f:
                     f.write("# 在此添加题目，每题之间用空行分隔\n\n")
                 st.success(f"类别 '{new_category}' 添加成功！")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.warning(f"类别 '{new_category}' 已存在")
     
@@ -503,4 +503,4 @@ def show_category_management():
                         os.remove(file_path)
                     
                     st.success(f"类别 '{category_to_delete}' 及其题目已删除")
-                    st.experimental_rerun() 
+                    st.rerun() 

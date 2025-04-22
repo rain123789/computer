@@ -3,6 +3,7 @@ from streamlit_option_menu import option_menu
 import database as db
 import auth
 from utils.ui import set_page_config, apply_custom_css, header
+import os
 
 # Import pages
 from pages.practice import practice_page
@@ -15,6 +16,50 @@ from pages.admin_user import admin_user_page
 # Set page config
 set_page_config()
 apply_custom_css()
+
+# 加载自定义菜单样式
+def load_custom_menu_css():
+    # 使用内联CSS样式，避免读取文件
+    st.markdown("""
+    <style>
+    /* 导航菜单定制样式 */
+    .stHorizontalBlock div[role="tablist"] {
+        flex-wrap: nowrap !important;
+    }
+    
+    .stHorizontalBlock button[role="tab"] {
+        white-space: nowrap !important;
+        height: auto !important;
+        min-height: 60px !important;
+        padding: 10px !important;
+    }
+    
+    .stHorizontalBlock button[role="tab"] div {
+        flex-direction: row !important;
+        width: auto !important;
+        align-items: center !important;
+    }
+    
+    .stHorizontalBlock button[role="tab"] div div {
+        margin-left: 5px !important;
+    }
+    
+    .stHorizontalBlock button[role="tab"] div i {
+        font-size: 16px !important;
+        margin-bottom: 0 !important;
+    }
+    
+    /* 修改菜单容器样式，防止折行 */
+    .stHorizontalBlock {
+        overflow-x: auto !important;
+    }
+    
+    /* 确保菜单文字在一行 */
+    .stHorizontalBlock button[role="tab"] p {
+        white-space: nowrap !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
 # Initialize authentication
 auth.init_auth()
@@ -53,14 +98,14 @@ def login_page():
         if submit:
             if auth.login(username, password):
                 st.success("登录成功！")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("用户名或密码错误")
     
     st.markdown("<p style='text-align: center;'>还没有账号？</p>", unsafe_allow_html=True)
     if st.button("注册新账号"):
         auth.update_page_state('register')
-        st.experimental_rerun()
+        st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -101,13 +146,13 @@ def register_page():
                 if auth.register(username, password, email):
                     st.success("注册成功！请登录")
                     auth.update_page_state('login')
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("用户名已存在")
     
     if st.button("返回登录"):
         auth.update_page_state('login')
-        st.experimental_rerun()
+        st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -123,8 +168,23 @@ def main():
         padding: 2rem;
         margin: 0 auto;
     }
+    /* 使菜单文字保持在一行 */
+    .nav-link {
+        white-space: nowrap;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row !important;
+        text-align: center;
+    }
+    .nav-link-text {
+        margin-left: 5px;
+    }
     </style>
     """, unsafe_allow_html=True)
+    
+    # 加载自定义菜单样式
+    load_custom_menu_css()
     
     # Display appropriate page based on authentication and page state
     if not auth.is_logged_in():
@@ -136,9 +196,9 @@ def main():
         # 如果已登录且页面状态仍为登录或注册页面，则更新为主页
         if st.session_state.page in ['login', 'register']:
             auth.update_page_state('home')
-            st.experimental_rerun()
+            st.rerun()
         
-        # Create horizontal navigation menu
+        # Create horizontal navigation menu with custom styles
         if auth.is_admin():
             selected = option_menu(
                 menu_title=None,
@@ -147,6 +207,20 @@ def main():
                 menu_icon="cast",
                 default_index=0,
                 orientation="horizontal",
+                styles={
+                    "container": {"padding": "0!important", "background-color": "#fafafa"},
+                    "icon": {"color": "orange", "font-size": "16px"},
+                    "nav-link": {
+                        "font-size": "14px",
+                        "text-align": "center",
+                        "margin": "0px",
+                        "padding": "10px",
+                        "--hover-color": "#eee",
+                        "flex-direction": "row !important",
+                        "white-space": "nowrap !important",
+                    },
+                    "nav-link-selected": {"background-color": "#1E88E5", "color": "white"},
+                }
             )
         else:
             selected = option_menu(
@@ -156,6 +230,20 @@ def main():
                 menu_icon="cast",
                 default_index=0,
                 orientation="horizontal",
+                styles={
+                    "container": {"padding": "0!important", "background-color": "#fafafa"},
+                    "icon": {"color": "orange", "font-size": "16px"},
+                    "nav-link": {
+                        "font-size": "14px",
+                        "text-align": "center",
+                        "margin": "0px",
+                        "padding": "10px",
+                        "--hover-color": "#eee",
+                        "flex-direction": "row !important",
+                        "white-space": "nowrap !important",
+                    },
+                    "nav-link-selected": {"background-color": "#1E88E5", "color": "white"},
+                }
             )
         
         # 保存当前选中的页面
@@ -167,7 +255,7 @@ def main():
             if st.button("退出登录"):
                 auth.logout()
                 auth.update_page_state('login')
-                st.experimental_rerun()
+                st.rerun()
                 
         with col1:
             st.markdown(f"### 你好, {st.session_state.username}!")

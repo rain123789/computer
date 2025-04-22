@@ -1,5 +1,8 @@
 import os
 import sys
+import streamlit as st
+import database as db
+from utils.ui import header, subheader, card
 
 def update_app_file():
     """
@@ -79,14 +82,14 @@ def login_page():
         if submit:
             if auth.login(username, password):
                 st.success("登录成功！")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("用户名或密码错误")
     
     st.markdown("<p style='text-align: center;'>还没有账号？</p>", unsafe_allow_html=True)
     if st.button("注册新账号"):
         st.session_state.page = 'register'
-        st.experimental_rerun()
+        st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -127,13 +130,13 @@ def register_page():
                 if auth.register(username, password, email):
                     st.success("注册成功！请登录")
                     st.session_state.page = 'login'
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("用户名已存在")
     
     if st.button("返回登录"):
         st.session_state.page = 'login'
-        st.experimental_rerun()
+        st.rerun()
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -185,7 +188,7 @@ def main():
             if st.button("退出登录"):
                 auth.logout()
                 st.session_state.page = 'login'
-                st.experimental_rerun()
+                st.rerun()
                 
         with col1:
             st.markdown(f"### 你好, {st.session_state.username}!")

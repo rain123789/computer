@@ -90,7 +90,8 @@ def show_user_list():
                 if st.checkbox("确认删除此用户？此操作不可恢复！"):
                     if db.delete_user(selected_user_id):
                         st.success("用户删除成功")
-                        st.experimental_rerun()
+                        st.session_state.edit_user_id = None
+                        st.rerun()
                     else:
                         st.error("删除失败，请稍后重试")
     
@@ -141,13 +142,13 @@ def show_edit_user_form(user_id):
                 if db.update_user(user_id, **updates):
                     st.success("用户信息更新成功！")
                     st.session_state.edit_user_id = None
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("更新失败，请稍后重试")
         
         if cancel:
             st.session_state.edit_user_id = None
-            st.experimental_rerun()
+            st.rerun()
 
 def show_add_user_form():
     """Display form to add a new user"""
@@ -171,7 +172,7 @@ def show_add_user_form():
                 # Add user
                 if db.create_user(username, password, email, int(is_admin)):
                     st.success("用户添加成功！")
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("添加失败，用户名可能已存在")
 

@@ -2,6 +2,7 @@ import streamlit as st
 import database as db
 import json
 import os
+from functools import wraps
 
 # 保存会话状态的文件路径
 SESSION_FILE = '.session_state.json'
@@ -45,6 +46,10 @@ def logout():
     if os.path.exists(SESSION_FILE):
         os.remove(SESSION_FILE)
 
+    # Reset page state
+    update_page_state('login')
+    st.rerun()
+
 def is_logged_in():
     """检查用户是否已登录"""
     return st.session_state.logged_in
@@ -69,26 +74,35 @@ def register(username, password, email=None):
 
 def login_required(func):
     """登录验证装饰器"""
+    @wraps(func)
     def wrapper(*args, **kwargs):
         if not is_logged_in():
             st.error("请先登录")
-            st.session_state.page = 'login'
-            st.experimental_rerun()
-            return None
+            update_page_state('login')
+            st.rerun()
+        
+        user_id = st.session_state.user_id
+        if user_id is None:
+            st.error("用户信息无效，请重新登录")
+            logout()
+            st.rerun()
+            
         return func(*args, **kwargs)
     return wrapper
 
 def admin_required(func):
     """管理员验证装饰器"""
+    @wraps(func)
     def wrapper(*args, **kwargs):
         if not is_logged_in():
             st.error("请先登录")
-            st.session_state.page = 'login'
-            st.experimental_rerun()
-            return None
+            update_page_state('login')
+            st.rerun()
+        
         if not is_admin():
-            st.error("您没有访问该页面的权限")
-            return None
+            st.error("需要管理员权限")
+            update_page_state('home')
+            
         return func(*args, **kwargs)
     return wrapper
 
@@ -144,7 +158,7 @@ def show_login_form():
         if submit:
             if login(username, password):
                 st.success("登录成功！")
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("用户名或密码错误")
     
@@ -172,6 +186,6 @@ def show_register_form():
                 if register(username, password, email):
                     st.success("注册成功！请登录")
                     st.session_state.show_register = False
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.error("用户名已存在") 

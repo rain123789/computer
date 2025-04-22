@@ -51,9 +51,13 @@ def profile_page():
                     
                     if db.update_user(user_id, **updates):
                         st.success("个人信息更新成功！")
-                        st.experimental_rerun()
+                        # 如果用户名发生变化，需要更新会话状态
+                        if updates.get('username') and updates['username'] != user_info['username']:
+                            st.session_state.username = updates['username']
+                            auth.save_session_state()
+                        st.rerun()
                     else:
-                        st.error("更新失败，请稍后重试")
+                        st.error("更新失败，请重试或检查用户名是否已被使用。")
     
     # Display activity summary
     st.markdown("---")

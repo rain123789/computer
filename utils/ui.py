@@ -99,6 +99,23 @@ def apply_custom_css():
         color: #1E88E5;
         text-align: center;
     }
+    /* 导航菜单样式调整 */
+    .nav-link {
+        white-space: nowrap !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        height: auto !important;
+    }
+    /* 让图标和文字在同一行 */
+    .nav-link i {
+        display: inline-block !important;
+        margin-bottom: 0 !important;
+    }
+    /* 修改导航菜单字体大小，确保文字在一行显示 */
+    div[data-testid="stHorizontalBlock"] .nav-link {
+        font-size: 14px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
